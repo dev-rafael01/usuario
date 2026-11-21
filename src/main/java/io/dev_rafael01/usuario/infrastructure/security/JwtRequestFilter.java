@@ -38,7 +38,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             //Extrai o tokem JWT do cabeçalho
             final String token = authorizationHeader.substring(7);
             //Extrai o nome do usuário do tokem JTW
-            final String username = jwtUtil.extractUsername(token);
+            final String username = jwtUtil.extrairEmailToken(token);
 
             //se o nome do usuário nao for nulo e o usuário não autenticado ainda
             if (username != null
