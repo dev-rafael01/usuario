@@ -1,0 +1,83 @@
+package io.dev_rafael01.usuario.controller;
+
+import io.dev_rafael01.usuario.business.UsuarioService;
+import io.dev_rafael01.usuario.business.dto.EnderecoDTO;
+import io.dev_rafael01.usuario.business.dto.TelefoneDTO;
+import io.dev_rafael01.usuario.business.dto.UsuarioDTO;
+import io.dev_rafael01.usuario.infrastructure.security.JwtUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/usuario")
+@RequiredArgsConstructor
+public class UsuarioController {
+
+    private final UsuarioService usuarioService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
+
+
+
+    @PostMapping
+    public ResponseEntity<UsuarioDTO> salvarUsuario(@RequestBody UsuarioDTO usuarioDTO) {
+        return ResponseEntity.ok(usuarioService.salvarUsuario(usuarioDTO));
+    }
+    @PostMapping("/login")
+    public String login(@RequestBody UsuarioDTO  usuarioDTO){
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(usuarioDTO.getEmail(),
+                        usuarioDTO.getSenha())
+        );
+        return "Bearer " +  jwtUtil.generateToken(authentication.getName());
+    }
+
+    @GetMapping
+    public ResponseEntity<UsuarioDTO> buscarUsuarioPorEmail(@RequestParam String email){
+        return ResponseEntity.ok(usuarioService.buscarUsuarioPorEmail(email));
+    }
+
+    @DeleteMapping("/{email}")
+    public ResponseEntity<Void> deleteUsuarioPorEmail(@PathVariable String email){
+        usuarioService.deleteUsuarioPorEmail(email);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping
+    public ResponseEntity<UsuarioDTO> atualizarDadosUsuario(
+            @RequestBody UsuarioDTO dto,
+            @RequestHeader("Authorization") String token) {
+        return ResponseEntity.ok(usuarioService.atualizarDadosUsuario(token, dto));
+    }
+
+    @PutMapping("/enderecos")
+    public ResponseEntity<EnderecoDTO> atulizarEndereco
+            (@RequestBody EnderecoDTO dto, @RequestParam("id") long id){
+        return ResponseEntity.ok(usuarioService.atualizarEndereco(id, dto));
+    }
+
+    @PutMapping("/telefones")
+    public ResponseEntity<TelefoneDTO> atulizarTelefone
+            (@RequestBody TelefoneDTO dto, @RequestParam("id") long id){
+        return ResponseEntity.ok(usuarioService.atualizarTelefone(id, dto));
+    }
+
+    @PostMapping("/enderecos")
+    public ResponseEntity<EnderecoDTO> cadastrarEndereco
+            (@RequestBody EnderecoDTO dto, @RequestHeader("authorization") String token){
+        return ResponseEntity.ok(usuarioService.cadastrarEndereco(token, dto));
+    }
+    @PostMapping("/telefones")
+    public ResponseEntity<TelefoneDTO> cadastrarTelefone
+            (@RequestBody TelefoneDTO dto, @RequestHeader("authorization") String token){
+        return ResponseEntity.ok(usuarioService.cadastrarTelefone(token, dto));
+    }
+
+
+
+
+}

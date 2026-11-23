@@ -1,0 +1,23 @@
+package io.dev_rafael01.usuario.business.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Getter
+@Service
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class EnderecoDTO {
+
+    private Long id;
+    private String rua;
+    private Long numero;
+    private String complemento;
+    private String cidade;
+    private String estado;
+    private String cep;
+}
